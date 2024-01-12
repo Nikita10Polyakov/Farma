@@ -1,16 +1,36 @@
-from aiogram import Bot, Dispatcher, executor, types
+import asyncio
+import logging
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters.command import Command
 from aiogram.types.web_app_info import WebAppInfo
-
-#TOKEN
-TOKEN = ""
-bot = Bot(TOKEN)
-dp = Dispatcher(bot)
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("Відкрити сторінку магазину", web_app=WebAppInfo(url="https://"))) #Сайт СЮДИ!!!
-    await message.answer("Вітаю у боті! Натисни на кнопку, щоб перейти до магазину", reply_markup=markup)
+logging.basicConfig(level=logging.INFO)
 
-executor.start_polling(dp)
+bot = Bot(token="###")    #ТОКЕН 
+
+dp = Dispatcher()
+
+
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    builder = InlineKeyboardBuilder()
+    builder.row(types.InlineKeyboardButton(
+        text="Відкрити сторінку магазину", web_app=WebAppInfo(url="###"))    #САЙТ 
+    )
+    user_id = message.from_user.id
+    print(user_id)
+
+
+    await message.answer(
+        'Вітаю у боті! Натисни на кнопку, щоб перейти до магазину',
+        reply_markup=builder.as_markup()
+    )
+
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
